@@ -133,9 +133,9 @@ a {
   flex: 1;
 }
 
-.toolbar-shell .hint {
-  color: var(--muted);
-  font-size: 13px;
+.toolbar-actions {
+  display: flex;
+  gap: 8px;
 }
 
 .icon-btn {
@@ -152,6 +152,15 @@ a {
 
 .icon-btn:hover {
   border-color: var(--accent);
+}
+
+.btn-icon {
+  font-weight: 600;
+}
+
+.toolbar-shell .hint {
+  color: var(--muted);
+  font-size: 13px;
 }
 
 .board-canvas {
@@ -171,18 +180,28 @@ a {
   padding: 12px;
   cursor: move;
   user-select: none;
+  display: flex;
+  flex-direction: column;
 }
 
-.canvas-object.is-dragging {
+.canvas-object.is-selected {
   border-color: var(--accent);
   box-shadow: 0 0 0 2px rgba(110, 231, 183, 0.25);
   z-index: 10;
 }
 
+.canvas-object.is-dragging {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px rgba(110, 231, 183, 0.25);
+  z-index: 20;
+}
+
 .canvas-object .object-label {
-  font-size: 13px;
+  font-size: 12px;
   color: var(--muted);
   margin-bottom: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .canvas-object .object-content {
@@ -190,6 +209,7 @@ a {
   color: var(--text);
   outline: none;
   min-height: 1em;
+  flex: 1;
 }
 
 .presence-shell {
