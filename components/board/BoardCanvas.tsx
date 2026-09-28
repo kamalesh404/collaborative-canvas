@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState, useCallback } from "react";
-import type { BoardObject } from "@/lib/board/types";
+import type { BoardObject, ObjectType } from "@/lib/board/types";
 import { Toolbar } from "./Toolbar";
 import { PresenceBar } from "./PresenceBar";
 
@@ -11,8 +11,9 @@ interface BoardCanvasProps {
 
 function useLocalBoard() {
   const [objects, setObjects] = useState<BoardObject[]>([]);
+  const [selectedId, setSelectedId] = useState<string | null>(null);
 
-  const addCard = useCallback(() => {
+  const addObject = useCallback((type: ObjectType) => {
     const baseX = 40 + Math.random() * 120;
     const baseY = 40 + Math.random() * 80;
 
@@ -20,12 +21,14 @@ function useLocalBoard() {
       ...prev,
       {
         id: crypto.randomUUID(),
-        type: "card",
+        type,
         x: baseX,
         y: baseY,
-        width: 180,
-        height: 120,
-        content: "New card",
+        width: type === "text" ? 160 : 180,
+        height: type === "text" ? 40 : 120,
+        content: type === "text" ? "Type here..." : "New card",
+        color: type === "text" ? "#e6e9ef" : undefined,
+        fontSize: type === "text" ? 14 : undefined,
       },
     ]);
   }, []);
@@ -39,15 +42,30 @@ function useLocalBoard() {
     [],
   );
 
-  return { objects, addCard, updateObject };
+  const deleteObject = useCallback((objectId: string) => {
+    setObjects((prev) => prev.filter((o) => o.id !== objectId));
+    setSelectedId(null);
+  }, []);
+
+  const selectObject = useCallback((objectId: string | null) => {
+    setSelectedId(objectId);
+  }, []);
+
+  return { objects, selectedId, addObject, updateObject, deleteObject, selectObject };
 }
 
 function DraggableObject({
   object,
+  selected,
   onUpdate,
+  onDelete,
+  onSelect,
 }: {
   object: BoardObject;
+  selected: boolean;
   onUpdate: (object: BoardObject) => void;
+  onDelete: (id: string) => void;
+  onSelect: (id: string | null) => void;
 }) {
   const ref = useRef<HTMLDivElement>(null);
   const dragging = useRef(false);
@@ -63,6 +81,8 @@ function DraggableObject({
       x: e.clientX - rect.left,
       y: e.clientY - rect.top,
     };
+
+    onSelect(object.id);
   }
 
   function move(e: React.MouseEvent<HTMLDivElement>) {
@@ -84,20 +104,27 @@ function DraggableObject({
     dragging.current = false;
   }
 
+  function handleDoubleClick() {
+    onDelete(object.id);
+  }
+
   return (
     <div
       ref={ref}
-      className={`canvas-object ${dragging.current ? "is-dragging" : ""}`}
+      className={`canvas-object ${selected ? "is-selected" : ""} ${dragging.current ? "is-dragging" : ""}`}
       style={{
         left: object.x,
         top: object.y,
         width: object.width,
         height: object.height,
+        backgroundColor: object.color || undefined,
+        fontSize: object.fontSize || undefined,
       }}
       onMouseDown={startDrag}
       onMouseMove={move}
       onMouseUp={endDrag}
       onMouseLeave={endDrag}
+      onDoubleClick={handleDoubleClick}
     >
       <div className="object-label">{object.type}</div>
       <div className="object-content" contentEditable suppressContentEditableWarning>
@@ -108,17 +135,20 @@ function DraggableObject({
 }
 
 export function BoardCanvas({ room }: BoardCanvasProps) {
-  const { objects, addCard, updateObject } = useLocalBoard();
+  const { objects, selectedId, addObject, updateObject, deleteObject, selectObject } = useLocalBoard();
 
   return (
     <>
-      <Toolbar room={room} onAddCard={addCard} />
+      <Toolbar room={room} onAddCard={() => addObject("card")} onAddText={() => addObject("text")} />
       <div className="board-canvas">
         {objects.map((object) => (
           <DraggableObject
             key={object.id}
             object={object}
+            selected={selectedId === object.id}
             onUpdate={updateObject}
+            onDelete={deleteObject}
+            onSelect={selectObject}
           />
         ))}
       </div>
