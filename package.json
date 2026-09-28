@@ -1,0 +1,33 @@
+{
+  "name": "collaborative-canvas",
+  "version": "0.1.0",
+  "private": true,
+  "description": "A real-time collaborative canvas for cards and text, built with Next.js, PartyKit, Postgres, and Drizzle ORM.",
+  "type": "module",
+  "author": "kamalesh404",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "dependencies": {
+    "next": "latest",
+    "partykit": "latest",
+    "react": "latest",
+    "react-dom": "latest",
+    "drizzle-orm": "latest",
+    "postgres": "latest"
+  },
+  "devDependencies": {
+    "typescript": "latest",
+    "@types/node": "latest",
+    "@types/react": "latest",
+    "@types/react-dom": "latest",
+    "drizzle-kit": "latest",
+    "eslint": "latest",
+    "eslint-config-next": "latest"
+  },
+
+  "license": "MIT"
+}

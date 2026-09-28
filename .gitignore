@@ -1,0 +1,29 @@
+# dependencies
+node_modules
+.pnpm-store
+
+# build
+.next
+out
+dist
+tsconfig.tsbuildinfo
+
+# env
+.env
+.env.local
+.env.*.local
+
+# database local artifacts
+drizzle
+
+# editor / OS
+.DS_Store
+*.pem
+.vscode
+.idea
+
+# misc
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
