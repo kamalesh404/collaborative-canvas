@@ -152,7 +152,7 @@ export function BoardCanvas({ room }: BoardCanvasProps) {
           />
         ))}
       </div>
-      <PresenceBar />
+      <PresenceBar participants={[]} />
     </>
   );
 }
