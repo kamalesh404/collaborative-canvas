@@ -14,7 +14,8 @@ tsconfig.tsbuildinfo
 .env.*.local
 
 # database local artifacts
-drizzle
+# (keep drizzle/ migrations tracked; only ignore local scratch)
+drizzle/meta/_journal.json.bak
 
 # editor / OS
 .DS_Store
@@ -27,3 +28,4 @@ drizzle
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+.partykit/

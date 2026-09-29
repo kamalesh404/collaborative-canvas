@@ -1,13 +1,8 @@
-import type { Board, BoardObject, Participant } from "@/lib/board/types";
-
-export default function room() {
-  // TODO: load initial board from persistence, then sync via PartyKit
-  return {
-    onConnect(_conn: { id?: string }, _ctx: { room?: string }) {
-      // presence and object sync will be wired here
-    },
-    onClose(_conn: { id?: string }, _ctx: { room?: string }) {
-      // presence cleanup
-    },
-  } as const;
-}
+// The real party server lives in /party/board.ts (PartyKit convention).
+// This file re-exports shared types used by both the client and the server.
+export type {
+  Board,
+  BoardObject,
+  Participant,
+} from "@/lib/board/types";
+export type { ClientMessage, ServerMessage } from "@/lib/board/messages";

@@ -2,43 +2,47 @@ import {
   pgTable,
   text,
   integer,
+  timestamp,
+  bigint,
   primaryKey,
-  uuid,
+  uniqueIndex,
 } from "drizzle-orm/pg-core";
-import { relations } from "drizzle-orm";
 
 export const boards = pgTable("boards", {
-  id: uuid("id").primaryKey(),
+  id: text("id").primaryKey(),
   name: text("name").notNull().default("Untitled board"),
-  updatedAt: integer("updated_at").notNull(),
+  createdAt: bigint("created_at", { mode: "number" }).notNull(),
+  updatedAt: bigint("updated_at", { mode: "number" }).notNull(),
 });
 
 export const objects = pgTable(
   "objects",
   {
-    id: uuid("id").notNull(),
-    boardId: uuid("board_id")
+    id: text("id").notNull(),
+    boardId: text("board_id")
       .notNull()
-      .references(() => boards.id),
-    type: text("type").notNull(),
+      .references(() => boards.id, { onDelete: "cascade" }),
+    type: text("type").notNull().$type<"card" | "text" | "rect">(),
     x: integer("x").notNull(),
     y: integer("y").notNull(),
     width: integer("width").notNull(),
     height: integer("height").notNull(),
     content: text("content").notNull().default(""),
+    color: text("color"),
+    fontSize: integer("font_size"),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
+    updatedAt: timestamp("updated_at", { withTimezone: true })
+      .notNull()
+      .defaultNow(),
   },
-  (table) => ({
-    pk: primaryKey({ columns: [table.boardId, table.id] }),
-  }),
+  (table) => [
+    primaryKey({ columns: [table.boardId, table.id] }),
+    uniqueIndex("objects_board_id_idx").on(table.boardId),
+  ],
 );
 
-export const boardRelations = relations(boards, ({ many }) => ({
-  objects: many(objects),
-}));
-
-export const objectRelations = relations(objects, ({ one }) => ({
-  board: one(boards, {
-    fields: [objects.boardId],
-    references: [boards.id],
-  }),
-}));
+export type BoardRow = typeof boards.$inferSelect;
+export type ObjectRow = typeof objects.$inferSelect;
+export type NewObjectRow = typeof objects.$inferInsert;

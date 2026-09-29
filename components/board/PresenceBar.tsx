@@ -1,25 +1,30 @@
 "use client";
 
 import type { Participant } from "@/lib/board/types";
+import type { ConnectionStatus } from "@/lib/board/useBoardSync";
 
 interface PresenceBarProps {
   participants: Participant[];
-  cursorPosition?: { x: number; y: number } | null;
+  status?: ConnectionStatus;
 }
 
-export function PresenceBar({ participants }: PresenceBarProps) {
-  if (participants.length === 0) {
-    return (
-      <div className="presence-shell">
-        <span>Connected as you · 1 participant</span>
-      </div>
-    );
-  }
+export function PresenceBar({ participants, status }: PresenceBarProps) {
+  const statusLabel =
+    status === "live"
+      ? "live"
+      : status === "connecting"
+        ? "connecting…"
+        : status === "offline"
+          ? "offline"
+          : null;
 
   return (
     <div className="presence-shell">
-      <span>
-        {participants.length} participant{participants.length !== 1 ? "s" : ""} online
+      <span className="presence-status" data-status={status ?? "unknown"}>
+        {statusLabel ? `${statusLabel} · ` : ""}
+        {participants.length === 0
+          ? "1 participant (you)"
+          : `${participants.length} participant${participants.length !== 1 ? "s" : ""}`}
       </span>
       <div className="participant-avatars">
         {participants.slice(0, 5).map((p) => (
